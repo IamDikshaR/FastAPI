@@ -1,21 +1,11 @@
 import os
-from transformers import pipeline
+import whisper
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 import httpx
-import torch
 
 # Set your OpenAI API key
-model_ckpt = "openai/whisper-base"
-lang = "en"
-device = "cuda" if torch.cuda.is_available() else "cpu"
-pipe = pipeline(
-    task="automatic-speech-recognition",
-    model=model_ckpt,
-    chunk_length_s=30,
-    device=device,
-)
-pipe.model.config.forced_decoder_ids = pipe.tokenizer.get_decoder_prompt_ids(language=lang, task="transcribe")
+model = whisper.load_model("tiny")
 
 # Define the audio transcription function
 def transcribe_audio(audio_url):
@@ -26,7 +16,8 @@ def transcribe_audio(audio_url):
         audio_data = response.content
 
     # Transcribe audio using the model
-    transcript = pipe(audio_data)["text"]
+    result = model.transcribe("audio.mp3")
+    transcript = result["text"]
 
     return transcript
 
