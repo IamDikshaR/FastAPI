@@ -3,6 +3,7 @@ import whisper
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 import httpx
+from uvicorn import run
 
 # Set your OpenAI API key
 model = whisper.load_model("tiny")
@@ -33,6 +34,6 @@ async def transcribe(audio_url: str):
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# if __name__ == "__main__":
+#     port = int(os.environ.get("PORT", 8000))
+#     run(app, host="0.0.0.0", port=port)
